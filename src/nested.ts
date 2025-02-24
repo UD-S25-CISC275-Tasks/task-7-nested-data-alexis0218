@@ -50,7 +50,10 @@ export function findQuestion(
  * with the given `id`.
  */
 export function removeQuestion(questions: Question[], id: number): Question[] {
-    return [];
+    const newList: Question[] = questions.filter(
+        (questions: Question): boolean => !(questions.id === id),
+    );
+    return newList;
 }
 
 /***
@@ -58,14 +61,21 @@ export function removeQuestion(questions: Question[], id: number): Question[] {
  * questions, as an array.
  */
 export function getNames(questions: Question[]): string[] {
-    return [];
+    const names: string[] = questions.map(
+        (question: Question): string => question.name,
+    );
+    return names;
 }
 
 /***
  * Consumes an array of questions and returns the sum total of all their points added together.
  */
 export function sumPoints(questions: Question[]): number {
-    return 0;
+    const points: number = questions.reduce(
+        (sum: number, question: Question) => sum + question.points,
+        0,
+    );
+    return points;
 }
 
 /***
