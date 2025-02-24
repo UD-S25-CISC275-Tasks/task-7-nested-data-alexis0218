@@ -1,5 +1,6 @@
 import { Answer } from "./interfaces/answer";
 import { Question, QuestionType } from "./interfaces/question";
+import { makeBlankQuestion } from "./objects";
 
 /**
  * Consumes an array of questions and returns a new array with only the questions
@@ -150,7 +151,12 @@ export function makeAnswers(questions: Question[]): Answer[] {
  * each question is now published, regardless of its previous published status.
  */
 export function publishAll(questions: Question[]): Question[] {
-    return [];
+    let allPub: Question[] = [];
+    for (let question of questions) {
+        let newQ: Question = { ...question, published: true };
+        allPub = [...allPub, newQ];
+    }
+    return allPub;
 }
 
 /***
@@ -158,7 +164,14 @@ export function publishAll(questions: Question[]): Question[] {
  * are the same type. They can be any type, as long as they are all the SAME type.
  */
 export function sameType(questions: Question[]): boolean {
-    return false;
+    if (questions.length === 0) {
+        return true;
+    }
+    const { type } = questions[0];
+    const same: boolean = questions.every(
+        (question: Question): boolean => question.type === type,
+    );
+    return same;
 }
 
 /***
@@ -172,7 +185,9 @@ export function addNewQuestion(
     name: string,
     type: QuestionType,
 ): Question[] {
-    return [];
+    const newQ: Question = makeBlankQuestion(id, name, type);
+    const newList: Question[] = [...questions, newQ];
+    return newList;
 }
 
 /***
@@ -185,7 +200,16 @@ export function renameQuestionById(
     targetId: number,
     newName: string,
 ): Question[] {
-    return [];
+    let renamed: Question[] = [];
+    for (let question of questions) {
+        if (question.id === targetId) {
+            let newQ: Question = { ...question, name: newName };
+            renamed = [...renamed, newQ];
+        } else {
+            renamed = [...renamed, question];
+        }
+    }
+    return renamed;
 }
 
 /***
