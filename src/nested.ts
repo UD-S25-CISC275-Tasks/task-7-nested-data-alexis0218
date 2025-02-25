@@ -1,6 +1,6 @@
 import { Answer } from "./interfaces/answer";
 import { Question, QuestionType } from "./interfaces/question";
-import { makeBlankQuestion } from "./objects";
+import { duplicateQuestion, makeBlankQuestion } from "./objects";
 
 /**
  * Consumes an array of questions and returns a new array with only the questions
@@ -224,7 +224,23 @@ export function changeQuestionTypeById(
     targetId: number,
     newQuestionType: QuestionType,
 ): Question[] {
-    return [];
+    let newQs: Question[] = [];
+    for (let question of questions) {
+        newQs = [...newQs, question];
+    }
+    const index: number = questions.findIndex(
+        (question: Question): boolean => question.id === targetId,
+    );
+    if (index < 0) {
+        return newQs;
+    }
+    let newQ: Question = { ...questions[index] };
+    if (newQ.type === "multiple_choice_question") {
+        newQ.options = [];
+    }
+    newQ.type = newQuestionType;
+    newQs.splice(index, 1, newQ);
+    return newQs;
 }
 
 /**
@@ -237,13 +253,29 @@ export function changeQuestionTypeById(
  * Remember, if a function starts getting too complicated, think about how a helper function
  * can make it simpler! Break down complicated tasks into little pieces.
  */
+
 export function editOption(
     questions: Question[],
     targetId: number,
     targetOptionIndex: number,
     newOption: string,
 ): Question[] {
-    return [];
+    let copyOfQuestions: Question[] = [];
+    for (let question of questions) {
+        // deep copy
+        const copyOfOptions: string[] = [...question.options];
+        let newQ: Question = { ...question, options: copyOfOptions };
+        copyOfQuestions = [...copyOfQuestions, newQ];
+    }
+    const index: number = copyOfQuestions.findIndex(
+        (question: Question): boolean => question.id === targetId,
+    );
+    if (targetOptionIndex < 0) {
+        copyOfQuestions[index].options.push(newOption);
+    } else {
+        copyOfQuestions[index].options.splice(targetOptionIndex, 1, newOption);
+    }
+    return copyOfQuestions;
 }
 
 /***
@@ -257,5 +289,15 @@ export function duplicateQuestionInArray(
     targetId: number,
     newId: number,
 ): Question[] {
-    return [];
+    let newQs: Question[] = [];
+    for (let question of questions) {
+        newQs = [...newQs, question];
+    }
+    const index: number = questions.findIndex(
+        (question: Question): boolean => question.id === targetId,
+    );
+    if (index >= 0) {
+        newQs.splice(index + 1, 0, duplicateQuestion(newId, questions[index]));
+    }
+    return newQs;
 }
